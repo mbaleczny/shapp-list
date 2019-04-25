@@ -21,6 +21,6 @@ import androidx.room.PrimaryKey
 )
 data class Item(
     @PrimaryKey(autoGenerate = true) var id: Long?,
-    @ColumnInfo(name = "list_id") var listId: Long?,
+    @ColumnInfo(name = "list_id", index = true) var listId: Long?,
     var name: String
 )
