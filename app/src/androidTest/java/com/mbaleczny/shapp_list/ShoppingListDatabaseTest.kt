@@ -10,6 +10,7 @@ import com.mbaleczny.shapp_list.data.dao.ShoppingListDao
 import com.mbaleczny.shapp_list.data.db.ShoppingListDatabase
 import com.mbaleczny.shapp_list.data.model.Item
 import com.mbaleczny.shapp_list.data.model.ShoppingList
+import com.mbaleczny.shapp_list.ui.MainActivity
 import io.reactivex.schedulers.Schedulers
 import org.junit.After
 import org.junit.Before

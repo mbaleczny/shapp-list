@@ -1,4 +1,4 @@
-package com.mbaleczny.shapp_list
+package com.mbaleczny.shapp_list.data
 
 import com.mbaleczny.shapp_list.data.dao.ItemDao
 import com.mbaleczny.shapp_list.data.dao.ShoppingListAndItemsDao

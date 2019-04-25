@@ -1,8 +1,6 @@
 package com.mbaleczny.shapp_list
 
 import android.app.Application
-import com.mbaleczny.shapp_list.data.DaggerDataComponent
-import com.mbaleczny.shapp_list.data.DataComponent
 
 /**
  * @author Mariusz Baleczny
@@ -10,18 +8,25 @@ import com.mbaleczny.shapp_list.data.DataComponent
  */
 class App : Application() {
 
-    private lateinit var dataComponent: DataComponent
+    lateinit var appComponent: AppComponent
+        private set
+
+    companion object {
+        private var INSTANCE: App? = null
+
+        @JvmStatic
+        fun get(): App = INSTANCE!!
+    }
 
     override fun onCreate() {
         super.onCreate()
+        INSTANCE = this
         initDependencies()
     }
 
     private fun initDependencies() {
-        dataComponent = DaggerDataComponent.builder()
+        appComponent = DaggerAppComponent.builder()
             .appModule(AppModule(this))
             .build()
     }
-
-    fun getDataComponent(): DataComponent = dataComponent
 }
