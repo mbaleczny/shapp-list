@@ -8,10 +8,16 @@ import dagger.Provides
  * @date 25/04/19
  */
 @Module
-class ShoppingListModule(private val view: ShoppingListContract.View) {
+class ShoppingListModule(
+    private val view: ShoppingListContract.View,
+    private val isArchived: Boolean
+) {
 
     @Provides
     fun provideView(): ShoppingListContract.View = view
+
+    @Provides
+    fun provideIsArchived(): Boolean = isArchived
 
     @Provides
     fun providePresenter(presenter: ShoppingListPresenter): ShoppingListContract.Presenter = presenter

@@ -16,7 +16,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var tabLayout: TabLayout
 
     companion object {
-        val TABS = arrayListOf("Current lists", "Archived")
+        val TABS = arrayListOf("Current", "Archived")
+        const val TAB_COUNT = 2
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -33,15 +34,12 @@ class MainActivity : AppCompatActivity() {
         }.attach()
     }
 
-    private fun createViewPagerAdapter(): FragmentStateAdapter {
-        return object : FragmentStateAdapter(this) {
-            override fun getItem(position: Int): Fragment {
-                return ShoppingListFragment.newInstance()
-            }
+    private fun createViewPagerAdapter(): FragmentStateAdapter =
+        object : FragmentStateAdapter(this) {
 
-            override fun getItemCount(): Int {
-                return 2
-            }
+            override fun getItem(position: Int): Fragment =
+                ShoppingListFragment.newInstance(position == 1)
+
+            override fun getItemCount(): Int = TAB_COUNT
         }
-    }
 }

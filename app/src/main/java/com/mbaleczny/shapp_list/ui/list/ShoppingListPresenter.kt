@@ -15,6 +15,7 @@ import javax.inject.Inject
  * @date 25/04/19
  */
 class ShoppingListPresenter @Inject constructor(
+    private val isArchived: Boolean,
     private val view: ShoppingListContract.View,
     private val repository: ShoppingListRepository,
     private val schedulerProvider: SchedulerProvider
@@ -32,7 +33,7 @@ class ShoppingListPresenter @Inject constructor(
 
     @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
     override fun onAttach() {
-        loadShoppingLists(false)
+        loadShoppingLists(isArchived)
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
@@ -40,14 +41,14 @@ class ShoppingListPresenter @Inject constructor(
         disposable.clear()
     }
 
-    override fun loadShoppingLists(archived: Boolean) {
-        if (!view.isVisible()) {
+    override fun loadShoppingLists(archived: Boolean?) {
+        if (view.isOffScreen()) {
             return
         }
         view.clearLists()
 
         disposable.add(
-            repository.getAllShoppingLists(archived)
+            repository.getAllShoppingLists(isArchived)
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
                 .subscribe(this::handleReturnedData, this::handleError, view::stopLoadingIndicator)

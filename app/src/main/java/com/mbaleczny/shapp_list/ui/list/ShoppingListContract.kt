@@ -21,11 +21,11 @@ interface ShoppingListContract {
 
         fun showErrorMessageView(message: String)
 
-        fun isVisible(): Boolean
+        fun isOffScreen(): Boolean
     }
 
     interface Presenter : BasePresenter<View> {
 
-        fun loadShoppingLists(archived: Boolean)
+        fun loadShoppingLists(archived: Boolean?)
     }
 }

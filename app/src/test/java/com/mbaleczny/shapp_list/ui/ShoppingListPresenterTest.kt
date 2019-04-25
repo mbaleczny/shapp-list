@@ -44,7 +44,7 @@ class ShoppingListPresenterTest {
     fun setUp() {
         MockitoAnnotations.initMocks(this)
         testScheduler = TestScheduler()
-        presenter = ShoppingListPresenter(view, repository, TestSchedulerProvider(testScheduler))
+        presenter = ShoppingListPresenter(false, view, repository, TestSchedulerProvider(testScheduler))
     }
 
     @Test
@@ -59,7 +59,7 @@ class ShoppingListPresenterTest {
 
     @Test
     fun loadData_ShouldNotAct_WhenViewIsNotVisible() {
-        given(view.isVisible()).willReturn(false)
+        given(view.isOffScreen()).willReturn(true)
         given(repository.getAllShoppingLists(false)).willReturn(Flowable.just(EMPTY_SHOPPING_LIST))
 
         presenter.loadShoppingLists(false)
