@@ -15,6 +15,8 @@ interface ShoppingListContract {
 
         fun stopLoadingIndicator()
 
+        fun startLoadingIndicator()
+
         fun showLists(lists: List<ShoppingList>)
 
         fun showEmptyListView(show: Boolean)
@@ -26,6 +28,8 @@ interface ShoppingListContract {
 
     interface Presenter : BasePresenter<View> {
 
-        fun loadShoppingLists(archived: Boolean?)
+        fun loadShoppingLists()
+
+        fun createShoppingList(title: String)
     }
 }

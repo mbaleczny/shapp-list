@@ -14,4 +14,6 @@ interface ShoppingListDataSource {
     fun getAllShoppingLists(archived: Boolean): Flowable<List<ShoppingList>>
 
     fun getShoppingListWithItems(listId: Long): Maybe<ShoppingListAndItems>
+
+    fun addShoppingList(itemList: ShoppingList)
 }

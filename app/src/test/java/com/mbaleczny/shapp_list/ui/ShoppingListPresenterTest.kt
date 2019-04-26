@@ -5,6 +5,8 @@ import com.mbaleczny.shapp_list.data.repo.ShoppingListRepository
 import com.mbaleczny.shapp_list.ui.list.ShoppingListContract
 import com.mbaleczny.shapp_list.ui.list.ShoppingListPresenter
 import com.mbaleczny.shapp_list.util.TestSchedulerProvider
+import com.nhaarman.mockitokotlin2.any
+import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.schedulers.TestScheduler
 import org.junit.Before
@@ -51,7 +53,7 @@ class ShoppingListPresenterTest {
     fun loadData_ShouldAlwaysStopLoadingIndicator() {
         given(repository.getAllShoppingLists(false)).willReturn(Flowable.just(EMPTY_SHOPPING_LIST))
 
-        presenter.loadShoppingLists(false)
+        presenter.loadShoppingLists()
         testScheduler.triggerActions()
 
         then(view).should(atLeastOnce()).stopLoadingIndicator()
@@ -62,7 +64,7 @@ class ShoppingListPresenterTest {
         given(view.isOffScreen()).willReturn(true)
         given(repository.getAllShoppingLists(false)).willReturn(Flowable.just(EMPTY_SHOPPING_LIST))
 
-        presenter.loadShoppingLists(false)
+        presenter.loadShoppingLists()
         testScheduler.triggerActions()
 
         then(view).should(never()).stopLoadingIndicator()
@@ -75,7 +77,7 @@ class ShoppingListPresenterTest {
     fun loadShoppingLists_ShouldShowLists_WhenDataReturned() {
         given(repository.getAllShoppingLists(false)).willReturn(Flowable.just(CURRENT_SHOPPING_LIST))
 
-        presenter.loadShoppingLists(false)
+        presenter.loadShoppingLists()
         testScheduler.triggerActions()
 
         then(view).should().clearLists()
@@ -87,7 +89,7 @@ class ShoppingListPresenterTest {
     fun loadShoppingLists_ShouldShowEmptyListView_WhenNoDataReturned() {
         given(repository.getAllShoppingLists(false)).willReturn(Flowable.just(EMPTY_SHOPPING_LIST))
 
-        presenter.loadShoppingLists(false)
+        presenter.loadShoppingLists()
         testScheduler.triggerActions()
 
         then(view).should().clearLists()
@@ -99,11 +101,26 @@ class ShoppingListPresenterTest {
     fun loadShoppingLists_ShouldShowErrorMessage_WhenExceptionThrown() {
         given(repository.getAllShoppingLists(false)).willReturn(Flowable.error(Exception("something bad happened")))
 
-        presenter.loadShoppingLists(false)
+        presenter.loadShoppingLists()
         testScheduler.triggerActions()
 
         then(view).should().clearLists()
         then(view).should().showErrorMessageView("something bad happened")
+        then(view).should(atLeastOnce()).stopLoadingIndicator()
+    }
+
+    @Test
+    fun createShoppingList_ShouldAddElementAndReloadData() {
+        val list = arrayListOf(ShoppingList(null, false, "New List"))
+        given(repository.getAllShoppingLists(false)).willReturn(Flowable.just(list))
+        given(repository.addShoppingList(any())).willAnswer { Completable.complete() }
+
+        presenter.createShoppingList("New List")
+        testScheduler.triggerActions()
+
+        then(view).should().startLoadingIndicator()
+        then(view).should().clearLists()
+        then(view).should().showEmptyListView(false)
         then(view).should(atLeastOnce()).stopLoadingIndicator()
     }
 }

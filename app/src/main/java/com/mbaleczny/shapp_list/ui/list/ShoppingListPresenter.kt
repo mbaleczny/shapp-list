@@ -7,6 +7,7 @@ import androidx.lifecycle.OnLifecycleEvent
 import com.mbaleczny.shapp_list.data.model.ShoppingList
 import com.mbaleczny.shapp_list.data.repo.ShoppingListRepository
 import com.mbaleczny.shapp_list.util.SchedulerProvider
+import io.reactivex.Completable
 import io.reactivex.disposables.CompositeDisposable
 import javax.inject.Inject
 
@@ -33,7 +34,7 @@ class ShoppingListPresenter @Inject constructor(
 
     @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
     override fun onAttach() {
-        loadShoppingLists(isArchived)
+        loadShoppingLists()
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
@@ -41,7 +42,7 @@ class ShoppingListPresenter @Inject constructor(
         disposable.clear()
     }
 
-    override fun loadShoppingLists(archived: Boolean?) {
+    override fun loadShoppingLists() {
         if (view.isOffScreen()) {
             return
         }
@@ -55,13 +56,22 @@ class ShoppingListPresenter @Inject constructor(
         )
     }
 
+    override fun createShoppingList(title: String) {
+        view.startLoadingIndicator()
+        disposable.add(
+            Completable.fromAction { repository.addShoppingList(ShoppingList(null, false, title)) }
+                .subscribeOn(schedulerProvider.io())
+                .observeOn(schedulerProvider.ui())
+                .subscribe(this::loadShoppingLists, this::handleError)
+        )
+    }
+
     private fun handleReturnedData(list: List<ShoppingList>) {
         view.stopLoadingIndicator()
 
-        if (list.isEmpty()) {
-            view.showEmptyListView(true)
-        } else {
-            view.showLists(list)
+        view.showEmptyListView(list.isEmpty())
+        list.takeIf { it.isNotEmpty() }?.let {
+            view.showLists(it)
         }
     }
 

@@ -39,4 +39,8 @@ class ShoppingListRepository @Inject constructor(
     override fun getShoppingListWithItems(listId: Long): Maybe<ShoppingListAndItems> {
         return shoppingListAndItemsDao.loadShoppingListAndItems(listId)
     }
+
+    override fun addShoppingList(itemList: ShoppingList) {
+        shoppingListDao.insert(itemList)
+    }
 }

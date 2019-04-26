@@ -1,12 +1,16 @@
 package com.mbaleczny.shapp_list.ui.list
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.mbaleczny.shapp_list.App
+import com.mbaleczny.shapp_list.R
 import com.mbaleczny.shapp_list.data.model.ShoppingList
+import com.mbaleczny.shapp_list.ui.add.AddItemDialogFragment
 import com.mbaleczny.shapp_list.ui.base.BaseListFragment
 import kotlinx.android.synthetic.main.fragment_list.*
 import javax.inject.Inject
@@ -23,6 +27,7 @@ class ShoppingListFragment : BaseListFragment(), ShoppingListContract.View {
     private lateinit var adapter: ShoppingListAdapter
 
     companion object {
+        const val ADD_LIST_REQUEST_CODE = 358
         private const val IS_ARCHIVED = "is_archived"
 
         fun newInstance(archived: Boolean): ShoppingListFragment {
@@ -48,9 +53,11 @@ class ShoppingListFragment : BaseListFragment(), ShoppingListContract.View {
         shopping_list_recycler.adapter = adapter
         shopping_list_recycler.itemAnimator = DefaultItemAnimator()
 
-        refresh.setOnRefreshListener { presenter.loadShoppingLists(arguments?.getBoolean(IS_ARCHIVED)) }
+        refresh.setOnRefreshListener { presenter.loadShoppingLists() }
         if (arguments?.getBoolean(IS_ARCHIVED) == true) {
             add_list_button.hide()
+        } else {
+            add_list_button.setOnClickListener { displayAddShoppingListDialog() }
         }
     }
 
@@ -83,5 +90,30 @@ class ShoppingListFragment : BaseListFragment(), ShoppingListContract.View {
             .shoppingListModule(ShoppingListModule(this, arguments?.getBoolean(IS_ARCHIVED) == true))
             .appComponent(App.get().appComponent)
             .build().inject(this)
+    }
+
+    private fun displayAddShoppingListDialog() {
+        val title = context?.getString(R.string.create_shopping_list_title)
+        val hint = context?.getString(R.string.title)
+
+        val dialog = AddItemDialogFragment.newInstance(title, hint)
+        dialog.setTargetFragment(this, ADD_LIST_REQUEST_CODE)
+
+        fragmentManager?.apply {
+            dialog.show(this, AddItemDialogFragment.TAG)
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == ADD_LIST_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+            data?.getStringExtra(AddItemDialogFragment.RESULT)?.apply {
+                presenter.createShoppingList(this)
+            }
+        }
+    }
+
+    override fun startLoadingIndicator() {
+        refresh.post { refresh.isRefreshing = true }
     }
 }
