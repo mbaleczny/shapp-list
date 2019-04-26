@@ -24,6 +24,8 @@ interface ItemListContract {
         fun showEmptyListView(show: Boolean)
 
         fun showErrorMessageView(message: String)
+
+        fun hideArchiveMenuItem()
     }
 
     interface Presenter : BasePresenter<View> {
@@ -33,5 +35,7 @@ interface ItemListContract {
         fun setShoppingListId(id: Long)
 
         fun createItem(name: String)
+
+        fun archiveList()
     }
 }

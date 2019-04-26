@@ -16,4 +16,6 @@ interface ShoppingListDataSource {
     fun getShoppingListWithItems(listId: Long): Maybe<ShoppingListAndItems>
 
     fun addShoppingList(itemList: ShoppingList)
+
+    fun updateShoppingList(itemList: ShoppingList)
 }

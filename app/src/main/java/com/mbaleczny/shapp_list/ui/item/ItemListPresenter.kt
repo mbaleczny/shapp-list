@@ -22,9 +22,11 @@ class ItemListPresenter @Inject constructor(
 ) :
     ItemListContract.Presenter, LifecycleObserver {
 
-    private lateinit var view: ItemListContract.View
     private val disposable: CompositeDisposable = CompositeDisposable()
+
+    private lateinit var view: ItemListContract.View
     private var shoppingListId: Long? = null
+    private var shoppingListAndItems: ShoppingListAndItems? = null
 
     override fun attachView(v: ItemListContract.View) {
         view = v
@@ -69,9 +71,25 @@ class ItemListPresenter @Inject constructor(
         )
     }
 
+    override fun archiveList() {
+        shoppingListAndItems?.shoppingList?.copy(archived = true)
+            ?.let {
+                disposable.add(
+                    Completable.fromAction { repository.updateShoppingList(it) }
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
+                        .subscribe {
+                            view.hideArchiveMenuItem()
+                            loadItemList()
+                        }
+                )
+            }
+    }
+
     private fun handleReturnedData(list: ShoppingListAndItems) {
         view.stopLoadingIndicator()
 
+        shoppingListAndItems = list
         view.showAddButton(!list.shoppingList.archived)
         view.showEmptyListView(list.items.isEmpty())
         list.items

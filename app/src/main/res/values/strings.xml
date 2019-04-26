@@ -8,4 +8,5 @@
     <string name="title">Title</string>
     <string name="name">Name</string>
     <string name="missing_text_message">You must type in something!</string>
+    <string name="archive">Archive</string>
 </resources>

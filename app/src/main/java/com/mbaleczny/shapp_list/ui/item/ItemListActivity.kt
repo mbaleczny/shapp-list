@@ -3,7 +3,10 @@ package com.mbaleczny.shapp_list.ui.item
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
+import androidx.core.view.get
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.mbaleczny.shapp_list.R
@@ -38,6 +41,8 @@ class ItemListActivity : DaggerAppCompatActivity(), ItemListContract.View, OnAdd
 
     private lateinit var adapter: ItemListAdapter
 
+    private var archiveMenuItem: MenuItem? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.base_list)
@@ -55,6 +60,20 @@ class ItemListActivity : DaggerAppCompatActivity(), ItemListContract.View, OnAdd
             toast("Internal error occurred").show()
             finish()
         }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.item_list_menu, menu)
+        archiveMenuItem = menu?.get(R.id.archive)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        when (item?.itemId) {
+            R.id.archive -> presenter.archiveList()
+            else -> toast("Unsupported menu item!")
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     override fun showAddButton(show: Boolean) {
@@ -94,6 +113,10 @@ class ItemListActivity : DaggerAppCompatActivity(), ItemListContract.View, OnAdd
 
     override fun showErrorMessageView(message: String) {
         toast(message).show()
+    }
+
+    override fun hideArchiveMenuItem() {
+        archiveMenuItem?.isVisible = false
     }
 
     private fun setupViews() {

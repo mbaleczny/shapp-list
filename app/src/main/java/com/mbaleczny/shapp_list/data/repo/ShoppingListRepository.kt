@@ -43,4 +43,8 @@ class ShoppingListRepository @Inject constructor(
     override fun addShoppingList(itemList: ShoppingList) {
         shoppingListDao.insert(itemList)
     }
+
+    override fun updateShoppingList(itemList: ShoppingList) {
+        shoppingListDao.update(itemList)
+    }
 }
