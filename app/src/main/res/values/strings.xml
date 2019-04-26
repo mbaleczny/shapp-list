@@ -9,4 +9,8 @@
     <string name="name">Name</string>
     <string name="missing_text_message">You must type in something!</string>
     <string name="archive">Archive</string>
+    <string name="delete">Delete</string>
+    <string name="archive_list">Archive list</string>
+    <string name="delete_list">Delete list</string>
+    <string name="are_you_sure">Are you sure?</string>
 </resources>

@@ -26,6 +26,8 @@ interface ItemListContract {
         fun showErrorMessageView(message: String)
 
         fun hideArchiveMenuItem()
+
+        fun closeView()
     }
 
     interface Presenter : BasePresenter<View> {
@@ -36,6 +38,10 @@ interface ItemListContract {
 
         fun createItem(name: String)
 
+        fun isListArchived(): Boolean
+
         fun archiveList()
+
+        fun deleteList()
     }
 }

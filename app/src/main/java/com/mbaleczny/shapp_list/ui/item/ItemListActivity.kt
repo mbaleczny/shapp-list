@@ -6,7 +6,7 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import androidx.core.view.get
+import androidx.annotation.StringRes
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.mbaleczny.shapp_list.R
@@ -15,7 +15,10 @@ import com.mbaleczny.shapp_list.ui.add.AddItemDialogFragment
 import com.mbaleczny.shapp_list.ui.add.OnAddItemListener
 import dagger.android.support.DaggerAppCompatActivity
 import kotlinx.android.synthetic.main.base_list.*
+import org.jetbrains.anko.alert
+import org.jetbrains.anko.noButton
 import org.jetbrains.anko.toast
+import org.jetbrains.anko.yesButton
 import javax.inject.Inject
 
 /**
@@ -64,13 +67,20 @@ class ItemListActivity : DaggerAppCompatActivity(), ItemListContract.View, OnAdd
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.item_list_menu, menu)
-        archiveMenuItem = menu?.get(R.id.archive)
+        archiveMenuItem = menu?.findItem(R.id.archive)?.apply {
+            isVisible = !presenter.run { isListArchived() }
+        }
         return true
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         when (item?.itemId) {
-            R.id.archive -> presenter.archiveList()
+            R.id.archive ->
+                showConfirmationAlert(R.string.archive_list) { presenter.archiveList() }
+
+            R.id.delete ->
+                showConfirmationAlert(R.string.delete_list) { presenter.deleteList() }
+
             else -> toast("Unsupported menu item!")
         }
         return super.onOptionsItemSelected(item)
@@ -119,6 +129,10 @@ class ItemListActivity : DaggerAppCompatActivity(), ItemListContract.View, OnAdd
         archiveMenuItem?.isVisible = false
     }
 
+    override fun closeView() {
+        finish()
+    }
+
     private fun setupViews() {
         adapter = ItemListAdapter(arrayListOf())
 
@@ -139,5 +153,12 @@ class ItemListActivity : DaggerAppCompatActivity(), ItemListContract.View, OnAdd
         dialog.onAddItemListener = this@ItemListActivity
 
         dialog.show(supportFragmentManager, AddItemDialogFragment.TAG)
+    }
+
+    private fun showConfirmationAlert(@StringRes title: Int, action: () -> Unit) {
+        alert(R.string.are_you_sure, title) {
+            yesButton { action.invoke() }
+            noButton { it.dismiss() }
+        }.show()
     }
 }

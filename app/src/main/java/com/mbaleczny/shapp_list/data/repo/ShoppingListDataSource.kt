@@ -18,4 +18,6 @@ interface ShoppingListDataSource {
     fun addShoppingList(itemList: ShoppingList)
 
     fun updateShoppingList(itemList: ShoppingList)
+
+    fun deleteShoppingList(itemList: ShoppingList)
 }

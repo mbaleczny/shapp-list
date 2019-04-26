@@ -86,6 +86,20 @@ class ItemListPresenter @Inject constructor(
             }
     }
 
+    override fun isListArchived(): Boolean = shoppingListAndItems?.shoppingList?.archived ?: false
+
+    override fun deleteList() {
+        shoppingListAndItems?.shoppingList
+            ?.let {
+                disposable.add(
+                    Completable.fromAction { repository.deleteShoppingList(it) }
+                        .subscribeOn(schedulerProvider.io())
+                        .observeOn(schedulerProvider.ui())
+                        .subscribe { view.closeView() }
+                )
+            }
+    }
+
     private fun handleReturnedData(list: ShoppingListAndItems) {
         view.stopLoadingIndicator()
 
