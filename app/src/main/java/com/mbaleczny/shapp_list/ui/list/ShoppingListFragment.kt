@@ -99,8 +99,6 @@ class ShoppingListFragment : DaggerFragment(), ShoppingListContract.View, OnAddI
         toast(message).show()
     }
 
-    override fun isOffScreen(): Boolean = !isVisible
-
     override fun addItem(value: String) {
         presenter.createShoppingList(value)
     }

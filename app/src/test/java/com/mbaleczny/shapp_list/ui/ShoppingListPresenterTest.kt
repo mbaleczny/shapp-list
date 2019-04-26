@@ -62,20 +62,6 @@ class ShoppingListPresenterTest {
     }
 
     @Test
-    fun loadData_ShouldNotAct_WhenViewIsNotVisible() {
-        given(view.isOffScreen()).willReturn(true)
-        given(repository.getAllShoppingLists(false)).willReturn(Flowable.just(EMPTY_SHOPPING_LIST))
-
-        presenter.loadShoppingLists()
-        testScheduler.triggerActions()
-
-        then(view).should(never()).stopLoadingIndicator()
-        then(view).should(never()).clearLists()
-        then(view).should(never()).showErrorMessageView(ArgumentMatchers.anyString())
-        then(view).should(never()).showLists(ArgumentMatchers.anyList())
-    }
-
-    @Test
     fun loadShoppingLists_ShouldShowLists_WhenDataReturned() {
         given(repository.getAllShoppingLists(false)).willReturn(Flowable.just(CURRENT_SHOPPING_LIST))
 

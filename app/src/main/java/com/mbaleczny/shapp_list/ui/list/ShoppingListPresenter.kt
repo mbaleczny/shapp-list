@@ -48,9 +48,6 @@ class ShoppingListPresenter @Inject constructor(
     }
 
     override fun loadShoppingLists() {
-        if (view.isOffScreen()) {
-            return
-        }
         view.clearLists()
 
         disposable.add(

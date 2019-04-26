@@ -22,8 +22,6 @@ interface ShoppingListContract {
         fun showEmptyListView(show: Boolean)
 
         fun showErrorMessageView(message: String)
-
-        fun isOffScreen(): Boolean
     }
 
     interface Presenter : BasePresenter<View> {
