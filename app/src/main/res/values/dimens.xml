@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="view_holder_text_size">16sp</dimen>
+    <dimen name="view_holder_text_size">18sp</dimen>
     <dimen name="small_padding">8dp</dimen>
     <dimen name="view_holder_margin">8dp</dimen>
+    <dimen name="card_corner_radius">2dp</dimen>
+    <dimen name="normal_padding">16dp</dimen>
+    <dimen name="empty_list_indicator_text_size">22sp</dimen>
 </resources>

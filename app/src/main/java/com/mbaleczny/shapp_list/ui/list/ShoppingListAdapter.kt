@@ -18,7 +18,7 @@ class ShoppingListAdapter(l: ArrayList<ShoppingList>) :
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.item_shopping_list, parent, false)
+            .inflate(R.layout.list_view_holder, parent, false)
         return ViewHolder(view)
     }
 
