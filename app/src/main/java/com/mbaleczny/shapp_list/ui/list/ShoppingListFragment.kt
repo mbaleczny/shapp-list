@@ -1,7 +1,5 @@
 package com.mbaleczny.shapp_list.ui.list
 
-import android.app.Activity
-import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -11,6 +9,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.mbaleczny.shapp_list.R
 import com.mbaleczny.shapp_list.data.model.ShoppingList
 import com.mbaleczny.shapp_list.ui.add.AddItemDialogFragment
+import com.mbaleczny.shapp_list.ui.add.OnAddItemListener
+import com.mbaleczny.shapp_list.ui.base.RecyclerViewListener
+import com.mbaleczny.shapp_list.ui.item.ItemListActivity
 import dagger.android.support.DaggerFragment
 import kotlinx.android.synthetic.main.base_list.*
 import org.jetbrains.anko.support.v4.toast
@@ -20,7 +21,7 @@ import javax.inject.Inject
  * @author Mariusz Baleczny
  * @date 25/04/19
  */
-class ShoppingListFragment : DaggerFragment(), ShoppingListContract.View {
+class ShoppingListFragment : DaggerFragment(), ShoppingListContract.View, OnAddItemListener {
 
     @Inject
     lateinit var presenter: ShoppingListContract.Presenter
@@ -28,7 +29,6 @@ class ShoppingListFragment : DaggerFragment(), ShoppingListContract.View {
     private lateinit var adapter: ShoppingListAdapter
 
     companion object {
-        const val ADD_LIST_REQUEST_CODE = 358
         private const val IS_ARCHIVED = "is_archived"
 
         fun newInstance(archived: Boolean): ShoppingListFragment {
@@ -54,6 +54,13 @@ class ShoppingListFragment : DaggerFragment(), ShoppingListContract.View {
 
     private fun setupViews() {
         adapter = ShoppingListAdapter(arrayListOf())
+        adapter.itemClickListener = object : RecyclerViewListener.OnItemClickListener {
+            override fun onItemClick(view: View, position: Int) {
+                val item = adapter.getItem(position)
+                startActivity(ItemListActivity.startIntent(context, item.id, item.title))
+            }
+        }
+
         list_recycler.layoutManager = LinearLayoutManager(context)
         list_recycler.adapter = adapter
         list_recycler.itemAnimator = DefaultItemAnimator()
@@ -94,23 +101,18 @@ class ShoppingListFragment : DaggerFragment(), ShoppingListContract.View {
 
     override fun isOffScreen(): Boolean = !isVisible
 
+    override fun addItem(value: String) {
+        presenter.createShoppingList(value)
+    }
+
     private fun displayAddShoppingListDialog() {
         val title = context?.getString(R.string.create_shopping_list_title)
         val hint = context?.getString(R.string.title)
 
-        val dialog = AddItemDialogFragment.newInstance(title, hint)
-        dialog.setTargetFragment(this, ADD_LIST_REQUEST_CODE)
-
-        fragmentManager?.apply {
-            dialog.show(this, AddItemDialogFragment.TAG)
-        }
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == ADD_LIST_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
-            data?.getStringExtra(AddItemDialogFragment.RESULT)?.apply {
-                presenter.createShoppingList(this)
+        fragmentManager?.let { fm ->
+            AddItemDialogFragment.newInstance(title, hint).apply {
+                onAddItemListener = this@ShoppingListFragment
+                show(fm, AddItemDialogFragment.TAG)
             }
         }
     }

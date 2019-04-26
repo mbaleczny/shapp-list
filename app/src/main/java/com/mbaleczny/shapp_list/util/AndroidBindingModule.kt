@@ -1,5 +1,6 @@
 package com.mbaleczny.shapp_list.util
 
+import com.mbaleczny.shapp_list.ui.item.ItemListActivity
 import com.mbaleczny.shapp_list.ui.list.ShoppingListFragment
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
@@ -13,4 +14,7 @@ abstract class AndroidBindingModule {
 
     @ContributesAndroidInjector
     abstract fun shoppingListFragment(): ShoppingListFragment
+
+    @ContributesAndroidInjector
+    abstract fun itemListActivity(): ItemListActivity
 }

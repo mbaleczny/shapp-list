@@ -1,6 +1,7 @@
 package com.mbaleczny.shapp_list
 
 import com.mbaleczny.shapp_list.data.DbModule
+import com.mbaleczny.shapp_list.ui.item.ItemListModule
 import com.mbaleczny.shapp_list.ui.list.ShoppingListModule
 import com.mbaleczny.shapp_list.util.AndroidBindingModule
 import com.mbaleczny.shapp_list.util.SchedulerModule
@@ -20,6 +21,7 @@ import javax.inject.Singleton
         SchedulerModule::class,
         DbModule::class,
         ShoppingListModule::class,
+        ItemListModule::class,
         AndroidBindingModule::class,
         AndroidSupportInjectionModule::class
     ]

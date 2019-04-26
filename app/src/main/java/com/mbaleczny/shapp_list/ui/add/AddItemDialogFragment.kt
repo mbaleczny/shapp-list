@@ -1,8 +1,6 @@
 package com.mbaleczny.shapp_list.ui.add
 
-import android.app.Activity
 import android.app.Dialog
-import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import androidx.appcompat.app.AlertDialog
@@ -21,7 +19,6 @@ class AddItemDialogFragment : DialogFragment() {
     companion object {
 
         const val TAG = "AddItemDialogFragment"
-        const val RESULT = "result_arg"
         private const val TITLE = "title_arg"
         private const val HINT = "hint_arg"
 
@@ -38,6 +35,8 @@ class AddItemDialogFragment : DialogFragment() {
     private lateinit var alertDialog: AlertDialog
     private lateinit var inputText: TextInputEditText
     private lateinit var inputLayout: TextInputLayout
+
+    var onAddItemListener: OnAddItemListener? = null
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val view = LayoutInflater.from(context).inflate(R.layout.dialog_add_item, null)
@@ -72,15 +71,10 @@ class AddItemDialogFragment : DialogFragment() {
                 if (this.isEmpty()) {
                     toast(R.string.missing_text_message).show()
                 } else {
-                    setResult(this)
+                    onAddItemListener?.addItem(this)
                     dialog.dismiss()
                 }
             }
         }
-    }
-
-    private fun setResult(inputValue: String) {
-        val data = Intent().apply { putExtra(RESULT, inputValue) }
-        targetFragment?.onActivityResult(targetRequestCode, Activity.RESULT_OK, data)
     }
 }

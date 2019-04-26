@@ -4,6 +4,8 @@
     <string name="shopping_list_icon_description">Shopping list icon</string>
     <string name="create">Create</string>
     <string name="create_shopping_list_title">Create new shopping list</string>
+    <string name="create_item_title">Create new item</string>
     <string name="title">Title</string>
+    <string name="name">Name</string>
     <string name="missing_text_message">You must type in something!</string>
 </resources>
