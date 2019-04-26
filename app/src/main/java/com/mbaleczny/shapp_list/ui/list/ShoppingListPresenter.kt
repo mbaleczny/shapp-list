@@ -16,21 +16,15 @@ import javax.inject.Inject
  * @date 25/04/19
  */
 class ShoppingListPresenter @Inject constructor(
-    private val isArchived: Boolean,
-    private val view: ShoppingListContract.View,
     private val repository: ShoppingListRepository,
     private val schedulerProvider: SchedulerProvider
 ) :
     ShoppingListContract.Presenter, LifecycleObserver {
 
-    private val disposable: CompositeDisposable
+    private val disposable: CompositeDisposable = CompositeDisposable()
 
-    init {
-        if (view is LifecycleOwner) {
-            (view as LifecycleOwner).lifecycle.addObserver(this)
-        }
-        disposable = CompositeDisposable()
-    }
+    private lateinit var view: ShoppingListContract.View
+    private var isArchived: Boolean = false
 
     @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
     override fun onAttach() {
@@ -40,6 +34,17 @@ class ShoppingListPresenter @Inject constructor(
     @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
     override fun onDetach() {
         disposable.clear()
+    }
+
+    override fun attachView(v: ShoppingListContract.View) {
+        view = v
+        if (view is LifecycleOwner) {
+            (view as LifecycleOwner).lifecycle.addObserver(this)
+        }
+    }
+
+    override fun setArchived(archived: Boolean) {
+        isArchived = archived
     }
 
     override fun loadShoppingLists() {

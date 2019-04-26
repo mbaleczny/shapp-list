@@ -1,19 +1,23 @@
 package com.mbaleczny.shapp_list
 
-import android.app.Application
 import android.content.Context
 import dagger.Module
 import dagger.Provides
-import javax.inject.Singleton
 
 /**
  * @author Mariusz Baleczny
  * @date 24/04/19
  */
 @Module
-class AppModule(private val appContext: Application) {
+abstract class AppModule {
 
-    @Provides
-    @Singleton
-    fun context(): Context = appContext
+    @Module
+    companion object {
+
+        @Provides
+        @JvmStatic
+        fun provideContext(app: App): Context {
+            return app
+        }
+    }
 }

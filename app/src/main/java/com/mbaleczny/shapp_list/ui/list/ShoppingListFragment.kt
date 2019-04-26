@@ -7,7 +7,6 @@ import android.view.View
 import android.widget.Toast
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.mbaleczny.shapp_list.App
 import com.mbaleczny.shapp_list.R
 import com.mbaleczny.shapp_list.data.model.ShoppingList
 import com.mbaleczny.shapp_list.ui.add.AddItemDialogFragment
@@ -39,7 +38,8 @@ class ShoppingListFragment : BaseListFragment(), ShoppingListContract.View {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        injectDependencies()
+        presenter.setArchived(arguments?.getBoolean(IS_ARCHIVED) == true)
+        presenter.attachView(this)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -84,13 +84,6 @@ class ShoppingListFragment : BaseListFragment(), ShoppingListContract.View {
     }
 
     override fun isOffScreen(): Boolean = !isVisible
-
-    private fun injectDependencies() {
-        DaggerShoppingListComponent.builder()
-            .shoppingListModule(ShoppingListModule(this, arguments?.getBoolean(IS_ARCHIVED) == true))
-            .appComponent(App.get().appComponent)
-            .build().inject(this)
-    }
 
     private fun displayAddShoppingListDialog() {
         val title = context?.getString(R.string.create_shopping_list_title)

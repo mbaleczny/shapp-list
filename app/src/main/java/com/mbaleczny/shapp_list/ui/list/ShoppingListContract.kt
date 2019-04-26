@@ -31,5 +31,7 @@ interface ShoppingListContract {
         fun loadShoppingLists()
 
         fun createShoppingList(title: String)
+
+        fun setArchived(archived: Boolean)
     }
 }

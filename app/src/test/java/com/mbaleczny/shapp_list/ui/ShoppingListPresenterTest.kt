@@ -46,7 +46,9 @@ class ShoppingListPresenterTest {
     fun setUp() {
         MockitoAnnotations.initMocks(this)
         testScheduler = TestScheduler()
-        presenter = ShoppingListPresenter(false, view, repository, TestSchedulerProvider(testScheduler))
+        presenter = ShoppingListPresenter(repository, TestSchedulerProvider(testScheduler))
+        presenter.setArchived(false)
+        presenter.attachView(view)
     }
 
     @Test

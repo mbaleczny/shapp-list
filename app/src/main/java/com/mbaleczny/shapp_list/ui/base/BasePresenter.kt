@@ -6,6 +6,8 @@ package com.mbaleczny.shapp_list.ui.base
  */
 interface BasePresenter<V> {
 
+    fun attachView(v: V)
+
     fun onAttach()
 
     fun onDetach()
