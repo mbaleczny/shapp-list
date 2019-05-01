@@ -67,7 +67,7 @@ class ItemListPresenter @Inject constructor(
             Completable.fromAction { repository.addItem(Item(null, shoppingListId, name)) }
                 .subscribeOn(schedulerProvider.io())
                 .observeOn(schedulerProvider.ui())
-                .subscribe { loadItemList() }
+                .subscribe({ loadItemList() }, this::handleError)
         )
     }
 
@@ -78,10 +78,10 @@ class ItemListPresenter @Inject constructor(
                     Completable.fromAction { repository.updateShoppingList(it) }
                         .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.ui())
-                        .subscribe {
+                        .subscribe({
                             view.hideArchiveMenuItem()
                             loadItemList()
-                        }
+                        }, this::handleError)
                 )
             }
     }
@@ -95,20 +95,35 @@ class ItemListPresenter @Inject constructor(
                     Completable.fromAction { repository.deleteShoppingList(it) }
                         .subscribeOn(schedulerProvider.io())
                         .observeOn(schedulerProvider.ui())
-                        .subscribe { view.closeView() }
+                        .subscribe({ view.closeView() }, this::handleError)
                 )
             }
     }
+
+    override fun deleteItem(position: Int) {
+        shoppingListAndItems?.items?.let { it[position] }?.let {
+            disposable.add(
+                Completable.fromAction { repository.removeItem(it) }
+                    .subscribeOn(schedulerProvider.io())
+                    .observeOn(schedulerProvider.ui())
+                    .subscribe({ loadItemList() }, this::handleError)
+            )
+        }
+    }
+
+    override fun getItemName(position: Int): String? =
+        shoppingListAndItems?.items?.let { it[position] }?.name
 
     private fun handleReturnedData(list: ShoppingListAndItems) {
         view.stopLoadingIndicator()
 
         shoppingListAndItems = list
+        val archivedList = shoppingListAndItems?.shoppingList?.archived ?: false
         view.showAddButton(!list.shoppingList.archived)
         view.showEmptyListView(list.items.isEmpty())
         list.items
             .takeIf { it.isNotEmpty() }
-            ?.let { view.showLists(it) }
+            ?.let { view.showLists(it, archivedList) }
     }
 
     private fun handleError(throwable: Throwable) {

@@ -13,6 +13,7 @@ import com.mbaleczny.shapp_list.R
 import com.mbaleczny.shapp_list.data.model.Item
 import com.mbaleczny.shapp_list.ui.add.AddItemDialogFragment
 import com.mbaleczny.shapp_list.ui.add.OnAddItemListener
+import com.mbaleczny.shapp_list.ui.base.RecyclerViewListener
 import dagger.android.support.DaggerAppCompatActivity
 import kotlinx.android.synthetic.main.base_list.*
 import org.jetbrains.anko.alert
@@ -113,7 +114,8 @@ class ItemListActivity : DaggerAppCompatActivity(), ItemListContract.View, OnAdd
         }
     }
 
-    override fun showLists(lists: List<Item>) {
+    override fun showLists(lists: List<Item>, archivedList: Boolean) {
+        adapter.archived = archivedList
         adapter.replaceData(lists)
     }
 
@@ -134,7 +136,14 @@ class ItemListActivity : DaggerAppCompatActivity(), ItemListContract.View, OnAdd
     }
 
     private fun setupViews() {
-        adapter = ItemListAdapter(arrayListOf())
+        adapter = ItemListAdapter(arrayListOf(), presenter.isListArchived())
+        adapter.deleteItemClickListener = object : RecyclerViewListener.OnItemClickListener {
+            override fun onItemClick(view: View, position: Int) {
+                val title = presenter.getItemName(position)?.let { String.format(getString(R.string.delete_item), it) }
+                    ?: getString(R.string.delete_item)
+                showConfirmationAlert(title) { presenter.deleteItem(position) }
+            }
+        }
 
         list_recycler.layoutManager = LinearLayoutManager(this)
         list_recycler.adapter = adapter
@@ -155,8 +164,11 @@ class ItemListActivity : DaggerAppCompatActivity(), ItemListContract.View, OnAdd
         dialog.show(supportFragmentManager, AddItemDialogFragment.TAG)
     }
 
-    private fun showConfirmationAlert(@StringRes title: Int, action: () -> Unit) {
-        alert(R.string.are_you_sure, title) {
+    private fun showConfirmationAlert(@StringRes title: Int, action: () -> Unit) =
+        showConfirmationAlert(getString(title), action)
+
+    private fun showConfirmationAlert(title: String, action: () -> Unit) {
+        alert(getString(R.string.are_you_sure), title) {
             yesButton { action.invoke() }
             noButton { it.dismiss() }
         }.show()

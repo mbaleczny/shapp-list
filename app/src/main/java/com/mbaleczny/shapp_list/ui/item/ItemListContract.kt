@@ -19,7 +19,7 @@ interface ItemListContract {
 
         fun startLoadingIndicator()
 
-        fun showLists(lists: List<Item>)
+        fun showLists(lists: List<Item>, archivedList: Boolean)
 
         fun showEmptyListView(show: Boolean)
 
@@ -43,5 +43,9 @@ interface ItemListContract {
         fun archiveList()
 
         fun deleteList()
+
+        fun deleteItem(position: Int)
+
+        fun getItemName(position: Int): String?
     }
 }
