@@ -7,6 +7,7 @@ import androidx.lifecycle.OnLifecycleEvent
 import com.mbaleczny.shapp_list.data.model.ShoppingList
 import com.mbaleczny.shapp_list.data.repo.ShoppingListRepository
 import com.mbaleczny.shapp_list.util.SchedulerProvider
+import com.mbaleczny.shapp_list.util.applySchedulers
 import io.reactivex.Completable
 import io.reactivex.disposables.CompositeDisposable
 import javax.inject.Inject
@@ -52,8 +53,7 @@ class ShoppingListPresenter @Inject constructor(
 
         disposable.add(
             repository.getAllShoppingLists(isArchived)
-                .subscribeOn(schedulerProvider.io())
-                .observeOn(schedulerProvider.ui())
+                .applySchedulers(schedulerProvider)
                 .subscribe(this::handleReturnedData, this::handleError, view::stopLoadingIndicator)
         )
     }
@@ -62,8 +62,7 @@ class ShoppingListPresenter @Inject constructor(
         view.startLoadingIndicator()
         disposable.add(
             Completable.fromAction { repository.addShoppingList(ShoppingList(null, false, title)) }
-                .subscribeOn(schedulerProvider.io())
-                .observeOn(schedulerProvider.ui())
+                .applySchedulers(schedulerProvider)
                 .subscribe(this::loadShoppingLists, this::handleError)
         )
     }

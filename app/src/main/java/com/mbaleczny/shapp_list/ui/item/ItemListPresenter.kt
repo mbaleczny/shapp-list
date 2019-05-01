@@ -8,6 +8,7 @@ import com.mbaleczny.shapp_list.data.model.Item
 import com.mbaleczny.shapp_list.data.model.ShoppingListAndItems
 import com.mbaleczny.shapp_list.data.repo.ShoppingListRepository
 import com.mbaleczny.shapp_list.util.SchedulerProvider
+import com.mbaleczny.shapp_list.util.applySchedulers
 import io.reactivex.Completable
 import io.reactivex.disposables.CompositeDisposable
 import javax.inject.Inject
@@ -55,8 +56,7 @@ class ItemListPresenter @Inject constructor(
         shoppingListId?.let { id ->
             disposable.add(
                 repository.getShoppingListWithItems(id)
-                    .subscribeOn(schedulerProvider.io())
-                    .observeOn(schedulerProvider.ui())
+                    .applySchedulers(schedulerProvider)
                     .subscribe(this::handleReturnedData, this::handleError)
             )
         }
@@ -65,8 +65,7 @@ class ItemListPresenter @Inject constructor(
     override fun createItem(name: String) {
         disposable.add(
             Completable.fromAction { repository.addItem(Item(null, shoppingListId, name)) }
-                .subscribeOn(schedulerProvider.io())
-                .observeOn(schedulerProvider.ui())
+                .applySchedulers(schedulerProvider)
                 .subscribe({ loadItemList() }, this::handleError)
         )
     }
@@ -76,8 +75,7 @@ class ItemListPresenter @Inject constructor(
             ?.let {
                 disposable.add(
                     Completable.fromAction { repository.updateShoppingList(it) }
-                        .subscribeOn(schedulerProvider.io())
-                        .observeOn(schedulerProvider.ui())
+                        .applySchedulers(schedulerProvider)
                         .subscribe({
                             view.hideArchiveMenuItem()
                             loadItemList()
@@ -93,8 +91,7 @@ class ItemListPresenter @Inject constructor(
             ?.let {
                 disposable.add(
                     Completable.fromAction { repository.deleteShoppingList(it) }
-                        .subscribeOn(schedulerProvider.io())
-                        .observeOn(schedulerProvider.ui())
+                        .applySchedulers(schedulerProvider)
                         .subscribe({ view.closeView() }, this::handleError)
                 )
             }
@@ -104,8 +101,7 @@ class ItemListPresenter @Inject constructor(
         shoppingListAndItems?.items?.let { it[position] }?.let {
             disposable.add(
                 Completable.fromAction { repository.removeItem(it) }
-                    .subscribeOn(schedulerProvider.io())
-                    .observeOn(schedulerProvider.ui())
+                    .applySchedulers(schedulerProvider)
                     .subscribe({ loadItemList() }, this::handleError)
             )
         }
